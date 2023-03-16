@@ -21,15 +21,6 @@ def generation_df_movies(path='../data/rotten_tomatoes_top_movies.csv') -> pd.co
            'box_office_(gross_usa)']).reset_index(drop=True).copy()
     
     return df_top_movies
-
-
-def dim_type() -> pd.core.frame.DataFrame:
-    
-    df_top_movies = generation_df_movies()
-    dim_type = pd.DataFrame({'type':list(df_top_movies['type'].unique())})
-    dim_type['id'] = range(1, dim_type.index.stop+1)
-    dim_type = dim_type[['id','type']]
-    return dim_type
     
     
 def dim_title() -> pd.core.frame.DataFrame:
@@ -51,14 +42,16 @@ def dim_genre() -> pd.core.frame.DataFrame:
     return df_genre
 
 
-def df_top_moviesWgenre() -> pd.core.frame.DataFrame:
+def rel_top_moviesWgenre() -> pd.core.frame.DataFrame:
     
     df_top_movies = generation_df_movies()
     df_genre = dim_genre()
     dict_genre = dict(zip(df_genre['genre'], df_genre['id']))
+    df_top_movies['genre'] = df_top_movies['genre'].str.split(',')
     df_top_moviesWgenre = df_top_movies[['id','genre']].explode('genre')
     df_top_moviesWgenre['genre'] = df_top_moviesWgenre['genre'].str.strip()
     df_top_moviesWgenre.replace({'genre':dict_genre},inplace=True)
+    df_top_moviesWgenre.rename(columns={'genre':'genre_id'},inplace=True)
     return df_top_moviesWgenre
 
 
@@ -79,3 +72,14 @@ def dim_director() -> pd.core.frame.DataFrame:
     df_director['id'] = range(1,df_director.index.stop + 1)
     df_director = df_director[['id','director']]
     return df_director
+
+def rel_top_moviesWdirector() -> pd.core.frame.DataFrame:
+    df_top_movies = generation_df_movies()
+    df_director = dim_director()
+    dict_director = dict(zip(df_director['director'], df_director['id']))
+    df_top_movies['director'] = df_top_movies['director'].str.split(',')
+    df_top_moviesWdirector = df_top_movies[['id','director']].explode('director')
+    df_top_moviesWdirector['director'] = df_top_moviesWdirector['director'].str.strip()
+    df_top_moviesWdirector.replace({'director':dict_director},inplace=True)
+    df_top_moviesWdirector.rename(columns={'director':'director_id'},inplace=True)
+    return df_top_moviesWdirector
