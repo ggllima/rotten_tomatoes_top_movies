@@ -2,10 +2,9 @@ from __future__ import annotations
 from typing import List
 import sqlalchemy as sa
 from sqlalchemy import *
-from sqlalchemy.orm import *
-from sqlalchemy_continuum import make_versioned
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+import settings as st
 
-make_versioned(user_cls=None)
 
 class Base(DeclarativeBase):
     pass
@@ -29,9 +28,11 @@ class Ranking_movie(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     title_id: Mapped[int] = mapped_column(ForeignKey("title.id"))
-    title: Mapped["Title"] = relationship(back_populates="ranking_movie")
+    title: Mapped["Dim_title"] = relationship(back_populates="ranking_movie")
     genre_id: Mapped[int] = mapped_column(ForeignKey("genre.id"))
-    genre: Mapped["Genre"] = relationship(back_populates="ranking_movie")
+    genre: Mapped["Dim_genre"] = relationship(back_populates="ranking_movie")
+    language_id: Mapped[int] = mapped_column(ForeignKey("language.id"))
+    language: Mapped["Dim_language"] = relationship(back_populates="ranking_movie")
     date_id: Mapped[int] = mapped_column(ForeignKey("date.id"))
     date: Mapped["Date"] = relationship(back_populates="ranking_movie")
     critic_score: Mapped[int] = mapped_column(Integer())
@@ -42,14 +43,14 @@ class Ranking_movie(Base):
     
     
     
-class Title(Base):
+class Dim_title(Base):
     __tablename__ = "title"
     
     id: Mapped[int] = mapped_column(primary_key=True)
     title_movie: Mapped[str] = mapped_column(String(50))
     ranking: Mapped[List["Ranking_movie"]] = relationship(back_populates="title")
     
-class Language(Base):
+class Dim_language(Base):
     __tablename__ = "language"
     
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -57,14 +58,14 @@ class Language(Base):
     ranking: Mapped[List["Ranking_movie"]] = relationship(back_populates="language")
     
     
-class Genre(Base):
+class Dim_genre(Base):
     __tablename__ = "genre"
     
     id: Mapped[int] = mapped_column(primary_key=True)
     genre_movie: Mapped[str] = mapped_column(String(50))
     ranking: Mapped[List["Ranking_movie"]] = relationship(back_populates="genre")
     
-class Director(Base):
+class Dim_drector(Base):
     __tablename__ = "director"
     
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -72,7 +73,7 @@ class Director(Base):
     ranking: Mapped[List["Ranking_movie"]] = relationship(back_populates="director")
     
     
-class Date(Base):
+class Dim_date(Base):
     __tablename__ = "date"
     
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -82,7 +83,7 @@ class Date(Base):
     month: Mapped[int] = mapped_column(Integer())
     day: Mapped[int] = mapped_column(Integer())
     
-
     
 
-    
+Base.metadata.create_all(st.rotten_engine)
+
