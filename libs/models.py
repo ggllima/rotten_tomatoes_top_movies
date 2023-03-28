@@ -3,7 +3,7 @@ from typing import List
 import sqlalchemy as sa
 from sqlalchemy import *
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-import settings as st
+from libs import settings as st
 
 
 class Base(DeclarativeBase):
