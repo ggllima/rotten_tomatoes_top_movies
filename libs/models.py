@@ -13,14 +13,14 @@ rel_movies_genre = Table(
     "rel_movies_genre",
     Base.metadata,
     Column("genre_id", ForeignKey("dim_genre.id"), primary_key=True),
-    Column("ranking_movie_id", ForeignKey("fact_ranking_movie.id"), primary_key=True),
+    Column("id", ForeignKey("fact_ranking_movie.id"), primary_key=True),
 )
 
 rel_movies_director = Table(
     "rel_movies_director",
     Base.metadata,
     Column("director_id", ForeignKey("dim_director.id"), primary_key=True),
-    Column("ranking_movie_id", ForeignKey("fact_ranking_movie.id"), primary_key=True),
+    Column("id", ForeignKey("fact_ranking_movie.id"), primary_key=True),
 )
 
 class FactRankingMovie(Base):
@@ -35,8 +35,10 @@ class FactRankingMovie(Base):
     # director: Mapped["DimDirector"] = relationship(back_populates="fact_ranking_movie")
     language_id: Mapped[int] = mapped_column(ForeignKey("dim_language.id"))
     language: Mapped["DimLanguage"] = relationship(back_populates="fact_ranking_movie")
-    date_id: Mapped[int] = mapped_column(ForeignKey("dim_date.id"))
-    date: Mapped["DimDate"] = relationship(back_populates="fact_ranking_movie")
+    release_date_theaters_id: Mapped[int] = mapped_column(ForeignKey("dim_date.id"))
+    release_date_theaters: Mapped["DimDate"] = relationship(back_populates="fact_ranking_movie")
+    release_date_streaming_id: Mapped[int] = mapped_column(ForeignKey("dim_date.id"))
+    release_date_streaming: Mapped["DimDate"] = relationship(back_populates="fact_ranking_movie")
     critic_score: Mapped[int] = mapped_column(Integer())
     people_score: Mapped[int] = mapped_column(Integer())
     total_reviews: Mapped[int] = mapped_column(Integer())
